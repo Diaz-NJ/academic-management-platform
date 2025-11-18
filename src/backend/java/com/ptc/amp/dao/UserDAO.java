@@ -8,29 +8,32 @@ import java.sql.*;
 public class UserDAO {
     
     // Create User (Registration)
-    public boolean createUser(User user) {
-        String sql = "INSERT INTO users (student_id, first_name, last_name, email, password_hash, section) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean createUser(User user, String plainPassword) {
+    String sql = "INSERT INTO users (student_id, first_name, last_name, email, password_hash, section) " +
+                 "VALUES (?, ?, ?, ?, ?, ?)";
+    
+    try (Connection conn = DatabaseConfig.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, user.getStudentId());
-            pstmt.setString(2, user.getFirstName());
-            pstmt.setString(3, user.getLastName());
-            pstmt.setString(4, user.getEmail());
-            pstmt.setString(5, user.getPasswordHash());
-            pstmt.setString(6, user.getSection());
-            
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
-            
-        } catch (SQLException e) {
-            System.err.println("Error creating user: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+        // Hash the password
+        String passwordHash = PasswordUtil.createPasswordHash(plainPassword);
+        
+        pstmt.setString(1, user.getStudentId());
+        pstmt.setString(2, user.getFirstName());
+        pstmt.setString(3, user.getLastName());
+        pstmt.setString(4, user.getEmail());
+        pstmt.setString(5, passwordHash);
+        pstmt.setString(6, user.getSection());
+        
+        int rowsAffected = pstmt.executeUpdate();
+        return rowsAffected > 0;
+        
+    } catch (SQLException e) {
+        System.err.println("Error creating user: " + e.getMessage());
+        e.printStackTrace();
+        return false;
     }
+}
     
     // Get User by Email
     public User getUserByEmail(String email) {
@@ -143,27 +146,31 @@ public class UserDAO {
     }
     
     // Authenticate User
-    public User authenticateUser(String email, String passwordHash) {
-        String sql = "SELECT * FROM users WHERE email = ? AND password_hash = ?";
+    public User authenticateUser(String email, String plainPassword) {
+    String sql = "SELECT * FROM users WHERE email = ?";
+    
+    try (Connection conn = DatabaseConfig.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, email);
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            String storedHash = rs.getString("password_hash");
             
-            pstmt.setString(1, email);
-            pstmt.setString(2, passwordHash);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
+            // Verify password
+            if (PasswordUtil.verifyPasswordHash(plainPassword, storedHash)) {
                 return extractUserFromResultSet(rs);
             }
-            
-        } catch (SQLException e) {
-            System.err.println("Error authenticating user: " + e.getMessage());
-            e.printStackTrace();
         }
         
-        return null;
+    } catch (SQLException e) {
+        System.err.println("Error authenticating user: " + e.getMessage());
+        e.printStackTrace();
     }
+    
+    return null;
+}
     
     // Helper method to extract User from ResultSet
     private User extractUserFromResultSet(ResultSet rs) throws SQLException {

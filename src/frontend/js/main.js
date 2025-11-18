@@ -94,13 +94,13 @@ async function handleTaskSubmit(e) {
     e.preventDefault();
     
     const taskData = {
+        userId: currentUser.id,
         title: document.getElementById('taskTitle').value,
         description: document.getElementById('taskDescription').value,
         subject: document.getElementById('taskSubject').value,
         dueDate: document.getElementById('taskDueDate').value,
         priority: document.getElementById('taskPriority').value,
-        status: 'Pending',
-        userId: currentUser.id
+        status: 'Pending'
     };
     
     try {

@@ -1,4 +1,4 @@
-package com.ptc.amp;
+package com.ptc.amp.test;
 
 import com.ptc.amp.config.DatabaseConfig;
 import java.sql.Connection;
