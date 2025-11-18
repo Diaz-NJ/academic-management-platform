@@ -2,7 +2,7 @@ package com.ptc.amp.dao;
 
 import com.ptc.amp.config.DatabaseConfig;
 import com.ptc.amp.models.User;
-
+import com.ptc.amp.utils.PasswordUtil;
 import java.sql.*;
 
 public class UserDAO {
