@@ -4,8 +4,8 @@ echo Deploying to Apache Tomcat
 echo ========================================
 echo.
 
-REM Set Tomcat path - CHANGE THIS if your Tomcat is installed elsewhere
-set TOMCAT_HOME=C:\Program Files\Apache Software Foundation\Tomcat 9.0
+REM Set Tomcat path using 8.3 short name format (avoids space issues)
+set TOMCAT_HOME=C:\PROGRA~2\APACHE~1\TOMCAT~1.0
 
 REM Check if Tomcat exists
 if not exist "%TOMCAT_HOME%" (
@@ -59,9 +59,9 @@ net start Tomcat9
 if %ERRORLEVEL% NEQ 0 (
     echo WARNING: Could not start Tomcat as service
     echo Starting Tomcat manually...
-    cd "%TOMCAT_HOME%\bin"
+    cd /d "%TOMCAT_HOME%\bin"
     start startup.bat
-    cd "%~dp0"
+    cd /d "%~dp0"
 )
 echo.
 

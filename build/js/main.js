@@ -92,6 +92,11 @@ function closeModal(modalId) {
 // Handle Task Submission
 async function handleTaskSubmit(e) {
     e.preventDefault();
+
+    const result = await apiCall(API_CONFIG.ENDPOINTS.TASKS, {
+    method: 'POST',
+    body: JSON.stringify(taskData)
+});
     
     const taskData = {
         userId: currentUser.id,
@@ -104,7 +109,7 @@ async function handleTaskSubmit(e) {
     };
     
     try {
-        const response = await fetch('/api/tasks', {
+        const response = await fetch('/academic-management-platform/api/tasks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -135,7 +140,7 @@ async function handleTaskSubmit(e) {
 // Load tasks from API
 async function loadTasksFromAPI() {
     try {
-        const response = await fetch(`/api/tasks?userId=${currentUser.id}`);
+        const response = await fetch(`/academic-management-platform/api/tasks?userId=${currentUser.id}`);
         
         if (response.ok) {
             tasks = await response.json();
@@ -155,7 +160,7 @@ async function updateTaskStatus(taskId, newStatus) {
         
         task.status = newStatus;
         
-        const response = await fetch(`/api/tasks/${taskId}`, {
+        const response = await fetch(`/academic-management-platform/api/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -193,7 +198,7 @@ async function handleEventSubmit(e) {
     };
     
     try {
-        const response = await fetch('/api/tasks', {
+        const response = await fetch('/academic-management-platform/api/tasks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
