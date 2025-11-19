@@ -88,52 +88,49 @@
         </div>
     </div>
     
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    try {
-        const response = await fetch('/academic-management-platform/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password })
-        });
+    <script src="js/config.js"></script>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        const data = await response.json();
-        const result = await apiCall(API_CONFIG.ENDPOINTS.LOGIN, {
-    method: 'POST',
-    body: JSON.stringify({ email, password })
-});
-
-if (result.ok && result.data.success) {
-    // Success handling
-}
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
         
-        if (response.ok && data.success) {
-            // Store user data in localStorage
-            localStorage.setItem('currentUser', JSON.stringify({
-                id: data.userId,
-                name: data.name,
-                email: data.email,
-                studentId: data.studentId,
-                section: data.section
-            }));
+        console.log('Attempting login with:', email); // Debug log
+        
+        try {
+            const response = await fetch('/academic-management-platform/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            });
             
-            // Redirect to main page
-            window.location.href = 'index.html';
-        } else {
-            alert(data.error || 'Login failed');
+            console.log('Response status:', response.status); // Debug log
+            
+            const data = await response.json();
+            console.log('Response data:', data); // Debug log
+            
+            if (response.ok && data.success) {
+                localStorage.setItem('currentUser', JSON.stringify({
+                    id: data.userId,
+                    name: data.name,
+                    email: data.email,
+                    studentId: data.studentId,
+                    section: data.section
+                }));
+                
+                alert('Login successful!');
+                window.location.href = 'index.html';
+            } else {
+                alert(data.error || 'Login failed. Please check your credentials.');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Connection error. Make sure Tomcat is running.');
         }
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('An error occurred. Please try again.');
-    }
-});
-    </script>
+    });
+</script>
 </body>
 </html>

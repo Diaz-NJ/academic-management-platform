@@ -129,49 +129,56 @@
         </div>
     </div>
     
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+    <!-- Add before closing </body> -->
+<script src="js/config.js"></script>
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (password !== confirmPassword) {
+            alert('Passwords do not match!');
+            return;
+        }
+        
+        const userData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            studentId: document.getElementById('studentId').value,
+            email: document.getElementById('email').value,
+            section: document.getElementById('section').value,
+            password: password
+        };
+        
+        console.log('Attempting registration...'); // Debug log
+        
+        try {
+            const response = await fetch('/academic-management-platform/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            });
             
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+            console.log('Response status:', response.status); // Debug log
             
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
+            const data = await response.json();
+            console.log('Response data:', data); // Debug log
+            
+            if (response.ok && data.success) {
+                alert('Registration successful! Please login.');
+                window.location.href = 'login.html';
+            } else {
+                alert(data.error || 'Registration failed. Please try again.');
             }
-            
-            const userData = {
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                studentId: document.getElementById('studentId').value,
-                email: document.getElementById('email').value,
-                section: document.getElementById('section').value,
-                password: password
-            };
-            
-            try {
-                const response = await fetch('/academic-management-platform/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(userData)
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    alert('Registration successful! Please login.');
-                    window.location.href = 'login.html';
-                } else {
-                    alert(data.error || 'Registration failed');
-                }
-            } catch (error) {
-                console.error('Registration error:', error);
-                alert('An error occurred. Please try again.');
-            }
-        });
-    </script>
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert('Connection error. Make sure Tomcat is running.');
+        }
+    });
+</script>
 </body>
 </html>

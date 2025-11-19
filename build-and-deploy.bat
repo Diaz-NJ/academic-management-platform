@@ -52,29 +52,9 @@ xcopy /s /y src\frontend\* build\
 echo Done.
 echo.
 
-REM Create web.xml
-echo [7/7] Creating web.xml...
-(
-echo ^<?xml version="1.0" encoding="UTF-8"?^>
-echo ^<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-echo          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-echo          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
-echo          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
-echo          version="4.0"^>
-echo.
-echo     ^<display-name^>Academic Management Platform^</display-name^>
-echo.
-echo     ^<welcome-file-list^>
-echo         ^<welcome-file^>login.html^</welcome-file^>
-echo         ^<welcome-file^>index.html^</welcome-file^>
-echo     ^</welcome-file-list^>
-echo.
-echo     ^<session-config^>
-echo         ^<session-timeout^>30^</session-timeout^>
-echo     ^</session-config^>
-echo.
-echo ^</web-app^>
-) > build\WEB-INF\web.xml
+REM Copy web.xml
+echo [7/7] Copying web.xml...
+copy src\backend\webapp\WEB-INF\web.xml build\WEB-INF\web.xml
 echo Done.
 echo.
 
