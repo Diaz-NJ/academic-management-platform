@@ -22,6 +22,14 @@ if not exist "academic-management-platform.war" (
     pause
     exit /b 1
 )
+echo [0/6] Checking MySQL status...
+sc query | findstr /i "mysql" > nul
+if %ERRORLEVEL% NEQ 0 (
+    echo WARNING: MySQL service might not be running!
+    echo Please check MySQL status before continuing.
+    pause
+)
+echo.
 
 echo [1/5] Stopping Tomcat...
 net stop Tomcat9 2>nul
